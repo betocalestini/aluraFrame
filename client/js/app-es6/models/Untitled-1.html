@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Document</title>
+      <link
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+         rel="stylesheet"
+         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+         crossorigin="anonymous"
+      />
+      <style>
+         .invisivel {
+            display: none;
+         }
+      </style>
+      <script>
+         ordemAtual = '';
+      </script>
+      <script>
+         // function ordena(coluna, model) {
+         //    console.log(coluna);
+         //    if (ordemAtual == coluna) {
+         //       inverteOrdem(ordemAtual);
+         //    } else {
+         //       model2 = model.sort((p, s) => p[coluna] - s[coluna]);
+         //    }
+         //    ordemAtual = coluna;
+         //    update(model2);
+         // }
+
+         // function inverteOrdem() {
+         //    this.reverse();
+         // }
+
+         // var divTabela = document.querySelector('#divTabela');
+         // function update(model) {
+         //    let novaDiv = template(model);
+         //    divTabela.innerHTML = novaDiv;
+         // }
+
+         function dataParaTexto(data) {
+            data = new Date(data);
+            return `${data.getDate()}/${data.getMonth() + 1}/${data.getFullYear()}`;
+         }
+
+         function textoParaData(texto) {
+            if (!/\d{2}\/\d{2}\/\d{4}/.test(texto))
+               throw new Error('Deve estar no formato dd/mm/aaaa');
+
+            return new Date(
+               ...texto
+                  .split('/')
+                  .reverse()
+                  .map((item, indice) => item - (indice % 2))
+            );
+         }
+
+         function template(model) {
+            return document.write(`
+                  <div class="container">
+                     <table class="table table-hover" id="tabela1">
+
+                       <thead>
+                           <tr>
+                              <th scope="col" onclick="ordena('data', ${model})">DATA</th>
+                              <th scope="col" onclick="ordena('quantidade', ${model})">QUANTIDADE</th>
+                              <th scope="col" onclick="ordena('valor', ${model})">VALOR</th>
+                              <th scope="col" onclick="ordena('volume', ${model})">VOLUME</th>
+                              <th scope="col" onclick="ordena('nome', ${model})">NOME</th>
+                           </tr>
+                              <div class="form-floating mb-3">
+                                 <input type="text" class="form-control" id="filtrar-tabela" placeholder="">
+                                 <label for="filtrar-tabela">Filtrar tabela</label>
+                              </div>
+                       </thead>
+
+                       <tbody>
+                                     ${model
+                                        .map(
+                                           (n) => `
+
+                            <tr class="linha">
+                                  <td class="info">${dataParaTexto(n.data)}</td>
+                                  <td class="info">${n.quantidade}</td>
+                                  <td class="info">${n.valor}</td>
+                                  <td class="info">${n.volume}</td>
+                                  <td class="info">${n.nome}</td>
+                            </tr>
+
+                                         `
+                                        )
+                                        .join('')}
+                       </tbody>
+
+
+
+                     </table>
+                  </div>
+                                         `);
+         }
+
+         var model = [
+            {
+               data: '2022-01-26T12:27:39.648Z',
+               quantidade: 1,
+               valor: 150,
+               volume: 156,
+               nome: 'petro',
+            },
+            {
+               data: '2022-01-27T12:27:39.648Z',
+               quantidade: 2,
+               valor: 250,
+               volume: 2435,
+               nome: 'vale',
+            },
+            {
+               data: '2022-01-28T12:27:39.648Z',
+               quantidade: 3,
+               valor: 350,
+               volume: 57456,
+               nome: 'embr',
+            },
+            {
+               data: '2022-01-26T12:27:39.648Z',
+               quantidade: 1,
+               valor: 150,
+               volume: 345345,
+               nome: 'itsa',
+            },
+            {
+               data: '2022-01-27T12:27:39.648Z',
+               quantidade: 2,
+               valor: 250,
+               volume: 787,
+               nome: 'cemig',
+            },
+            {
+               data: '2022-01-29T12:27:39.648Z',
+               quantidade: 3,
+               valor: 350,
+               volume: 345,
+               nome: 'mglu',
+            },
+            {
+               data: '2022-01-30T12:27:39.648Z',
+               quantidade: 1,
+               valor: 150,
+               volume: 8996,
+               nome: 'petro',
+            },
+            {
+               data: '2022-01-31T12:27:39.648Z',
+               quantidade: 2,
+               valor: 250,
+               volume: 56789,
+               nome: 'petro',
+            },
+            {
+               data: '2022-01-01T12:27:39.648Z',
+               quantidade: 3,
+               valor: 350,
+               volume: 0,
+               nome: 'petro',
+            },
+         ];
+      </script>
+   </head>
+   <body>
+      <div id="divTabela">
+         <script>
+            template(model);
+         </script>
+      </div>
+      <script>
+         var campoFiltro = document.querySelector('#filtrar-tabela');
+
+         campoFiltro.addEventListener('input', function () {
+            var linhas = document.querySelectorAll('.linha');
+
+            if (this.value.length > 0) {
+               for (let i = 0; i < linhas.length; i++) {
+                  let linha = linhas[i];
+                  linha.classList.add('invisivel');
+                  console.log(linha);
+
+                  let linhaFiltrada = [];
+                  let tdAtual = linha.querySelectorAll('.info');
+                  tdAtual.forEach((conteudo) => {
+                     linhaFiltrada.push(conteudo.textContent);
+                  });
+
+                  let expressao = new RegExp(this.value, 'i');
+                  console.log(expressao);
+
+                  linhaFiltrada.map((conteudo) => {
+                     if (expressao.test(conteudo)) {
+                        linha.classList.remove('invisivel');
+                     }
+                  });
+               }
+            } else {
+               for (let i = 0; i < linhas.length; i++) {
+                  let linha = linhas[i];
+                  linha.classList.remove('invisivel');
+               }
+            }
+         });
+      </script>
+
+      <script
+         src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+         crossorigin="anonymous"
+      ></script>
+   </body>
+</html>
